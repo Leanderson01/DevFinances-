@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;
+      700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>DevFinances</title>
+  </head>
+  <body>
+    <header>
+      <h1 id="logo">dev<span>.</span>finances<span>$</span></h1>
+    </header>
+
+    <main class="container">
+      <!-- balanço -->
+      <section id="balance">
+        <h2 class="sr-only">Balanço</h2>
+        <!-- entrada -->
+        <div class="cards">
+          <h3>
+            Entradas
+            <img src="./assets/income.svg" alt="Imagem de entradas" />
+          </h3>
+          <p id="incomeDisplay"></p>
+        </div>
+        <!-- saída -->
+        <div class="cards">
+          <h3>
+            Saídas
+            <img src="./assets/expense.svg" alt="Imagem de saídas" />
+          </h3>
+          <p id="expanseDisplay"></p>
+        </div>
+        <!-- total -->
+        <div id="total" class="cards total">
+          <h3>
+            Total
+            <img src="./assets/total.svg" alt="Imagem de total" />
+          </h3>
+          <p id="totalDisplay"></p>
+        </div>
+      </section>
+
+      <!-- transações -->
+      <section id="transaction">
+        <h2 class="sr-only">Transações</h2>
+
+        <a href="#" class="button new" onClick="Modal.open()">
+          <span>+ Nova Transação</span>
+        </a>
+
+        <table id="data-table">
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Valor</th>
+              <th>Data</th>
+              <!-- row para a img -->
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
+
+    <div class="modal-overlay">
+      <div class="modal">
+        <div class="form">
+          <h2>Nova Transação</h2>
+          <form action="">
+            <!-- descricao -->
+            <div class="input-group">
+              <label class="sr-only" for="description">Descrição</label>
+              <input
+                id="description"
+                name="description"
+                type="text"
+                placeholder="Descrição"
+              />
+            </div>
+            <!-- valor -->
+            <div class="input-group">
+              <label class="sr-only" for="amount">Valor</label>
+              <input
+                id="amount"
+                name="amount"
+                step="0.01"
+                type="number"
+                placeholder="0,00"
+              />
+              <small class="help">
+                Use o sinal "-" (negativo) para despesas e "," (vírgula)
+              </small>
+            </div>
+            <!-- data -->
+            <div class="input-group">
+              <label class="sr-only" for="date">Data</label>
+              <input
+                id="date"
+                name="date"
+                type="date"
+                placeholder="01/01/2001"
+              />
+            </div>
+            <!-- actions -->
+            <div class="input-group actions">
+              <a href="#" class="button cancel" onClick="Modal.close();">
+                Cancelar
+              </a>
+              <button>Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>dev.finance<span>$</span></p>
+      <p><span>by:</span> Leanderson Nunes</p>
+    </footer>
+
+    <script src="bundle.js"></script>
+  </body>
+</html>
