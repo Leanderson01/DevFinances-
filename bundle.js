@@ -13,55 +13,121 @@ const Modal = {
 };
 // ou fechar o modal apertando esc no teclado
 const body = document.querySelector('body');
-
 body.onkeyup = (e) => {
   if (e.code === 'Escape'){
   document.querySelector('.modal-overlay').classList.remove('active');
   }
 };
 
-// Mudar cor do totalDisplay caso o valor seja negativo:
-function changeColor (){
-  let totalTransactions = Transactions.total();
-  const totalDisplay = document.getElementById("total");
-  
-  if(totalTransactions < 0){
-    totalDisplay.classList.add("negative");
-  }
-  
-}
-
-
 // Objeto que tem as infos da table
 const transactions = [{
-  id: 1,
   description: 'Luz',
   value: -500,
   date: '23/01/2022'
 }, 
 {
-  id: 2,
   description: 'Internet',
   value: -200,
   date: '17/01/2022'
 }, 
 {
-  id: 3,
   description: 'Website',
   value: 5000,
   date: '12/01/2022'
 },
 {
-  id: 4,
   description: 'App',
   value: 7000,
   date: '12/01/2022'
 }
 ];
 
+const Form = {
+  description: document.querySelector('input#description'),
+  amount: document.querySelector('input#amount').value,
+  date: document.querySelector('input#date'),
+
+  // Pegar os valores e organizar
+  getValues(){
+    return {
+      description: this.description.value,
+      amount: Form.amount.value,
+      date: this.date.value
+    };
+  },
+
+  // Verificar se todos os campos foram preenchidos
+  validadeFields(){
+    if(
+      this.getValues().description === '' ||
+      this.getValues().amount === '' ||
+      this.getValues().date === ''
+    ){
+      alert(
+        "Opa! Algo deu errado... Por favor, preencha os campos corretamente."
+      );
+    };
+  },
+
+  // Formatar os dados para salvar
+  formatData(){
+    let { description, amount, date } = this.getValues(); 
+    amount = Utils.formatAmount(amount);
+    date = Utils.formatDate(date);
+    return {
+      description: description,
+      amount,
+      date
+    };
+  },
+
+  // Salvando a transação
+  saveTransaction(transaction){
+    Transactions.add(transaction);
+  },
+
+  // Limpar os dados dos campos
+  clearFields(){
+    this.description.value = "";
+    this.amount.value = "";
+    this.date.value = "";
+  },
+
+  // Enviar dados
+  submit(event) {
+    event.preventDefault();
+
+    // Validando os campos
+    // Form.validadeFields();
+
+    // Formatando os campos
+    const transaction = Form.formatData();
+    // console.log(transaction);
+
+    // Salvando a transação
+    Form.saveTransaction(transaction);
+
+    // Limpando os campos
+    // Form.clearFields();
+
+    // Fechando o modal
+    Modal.close();
+  }
+}
+
 // Calcular as entradas e saídas e somar num total
 const Transactions = {
   all: transactions,
+  add(transaction){
+    Transactions.all.push(transaction);
+
+    App.reload();
+  },
+  remove(index){
+    Transactions.all.splice(index, 1);
+
+    App.reload();
+  },
   incomes(){
     // somar entradas
     let income = 0;
@@ -92,7 +158,6 @@ const Transactions = {
     Transactions.all.forEach((transaction) => {
       total += transaction.value; 
     });
-    
     
     return total;
   }
@@ -140,13 +205,18 @@ const DOM = {
     .innerHTML = Utils.formatCurrency(Transactions.total());
     
     // mudar cor do componente caso seja negativo
-    changeColor();
+    Utils.changeColor();
+  },
+
+  // Limpar o conteúdo quando ele der o reload
+  clearTransactions(){
+    DOM.transactionsContainer.innerHTML = '';
   }
 };
 
 // Utilitários do código
 const Utils = {
-  // formatar o número para a moeda br
+  // Formatar o número para a moeda br
   formatCurrency(value){
     const signal = Number(value) < 0 ? '-' : '';
 
@@ -161,11 +231,50 @@ const Utils = {
     });
 
     return signal + " " + value;
+  },
+  // Mudar cor do totalDisplay caso o valor seja negativo:
+  changeColor (){
+  let totalTransactions = Transactions.total();
+  const totalDisplay = document.getElementById("total");
+  
+  if(totalTransactions < 0){
+    totalDisplay.classList.add("negative");
+  }
+  
+},
+  // Formatar o valor "amount" do modal
+  formatAmount(value){
+    value = Number(value);
+    console.log(amount);
+    return value;
+  },
+  // Formatar o valor "date" do modal
+  formatDate (date){
+    const splittedDate = date.split("-");
+    return `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`
   }
 };
 
-transactions.forEach((transaction) => {
-  DOM.addTransaction(transaction)
-});
+const App = {
+  init() {
+    Transactions.all.forEach((transaction) => {
+      DOM.addTransaction(transaction)
+    });
 
-DOM.updateBalance();
+    DOM.updateBalance();
+  },
+  reload() {
+    // Limpando o conteúdo antigo para não duplica-los na table
+    DOM.clearTransactions();
+
+    App.init();
+  }
+};
+
+App.init();
+
+Transactions.add({
+  description: 'Skin Valorant :D',
+  value: -15021.23,
+  date: '24/01/2022'
+});
