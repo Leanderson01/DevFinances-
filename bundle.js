@@ -163,14 +163,15 @@ const DOM = {
   // Adicionando o tr na table
   addTransaction(transaction, index){
     const tr = document.createElement('tr');
-    tr.innerHTML = DOM.innerHtmlTransaction(transaction);
+    tr.innerHTML = DOM.innerHtmlTransaction(transaction, index);
+    tr.dataset.index = index;
 
     DOM.transactionsContainer.appendChild(tr);
 
   },
 
   // Escrevendo uma transação com o td e com as infos do obj transactions
-  innerHtmlTransaction(transaction) {
+  innerHtmlTransaction(transaction, index) {
     const cssClass = transaction.value > 0 ? "income" : "expanse";
 
     let value = Utils.formatCurrency(transaction.value);
@@ -182,7 +183,7 @@ const DOM = {
         <td class="date">${transaction.date}</td>
         <td>
           <a 
-            onClick="Transactions.remove()"
+            onClick="Transactions.remove(${index})"
           >
             <img 
               src="./assets/minus.svg" 
@@ -257,8 +258,8 @@ const Utils = {
 
 const App = {
   init() {
-    Transactions.all.forEach((transaction) => {
-      DOM.addTransaction(transaction)
+    Transactions.all.forEach((transaction, index) => {
+      DOM.addTransaction(transaction,index)
     });
 
     DOM.updateBalance();
