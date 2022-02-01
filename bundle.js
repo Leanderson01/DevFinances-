@@ -197,6 +197,7 @@ const Form = {
       alert(
         "Opa! Algo deu errado... Por favor, preencha os campos corretamente."
       );
+      throw new Error("Por favor, preencha todos os campos");
     };
   },
 
