@@ -108,6 +108,10 @@ header {
   justify-content: center;
 }
 
+a {
+  cursor: pointer;
+}
+
 span {
   color: var(--green);
 }

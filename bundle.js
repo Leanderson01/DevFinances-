@@ -98,11 +98,10 @@ const Form = {
     event.preventDefault();
 
     // Validando os campos
-    // Form.validadeFields();
+    Form.validadeFields();
 
     // Formatando os campos
     const transaction = Form.formatData();
-    console.log(transaction);
 
     // Salvando a transação
     Form.saveTransaction(transaction);
@@ -182,7 +181,14 @@ const DOM = {
         <td class=${cssClass}>${value}</td>
         <td class="date">${transaction.date}</td>
         <td>
-          <img src="./assets/minus.svg" alt="Remover Transação" />
+          <a 
+            onClick="Transactions.remove()"
+          >
+            <img 
+              src="./assets/minus.svg" 
+              alt="Remover Transação" 
+            />
+          </a>
         </td>`
 
     return html;
