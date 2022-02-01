@@ -22,36 +22,36 @@ body.onkeyup = (e) => {
 // Objeto que tem as infos da table
 const transactions = [{
   description: 'Luz',
-  value: -500,
+  value: -50000,
   date: '23/01/2022'
 }, 
 {
   description: 'Internet',
-  value: -200,
+  value: -20000,
   date: '17/01/2022'
 }, 
 {
   description: 'Website',
-  value: 5000,
+  value: 500000,
   date: '12/01/2022'
 },
 {
   description: 'App',
-  value: 7000,
+  value: 700000,
   date: '12/01/2022'
 }
 ];
 
 const Form = {
   description: document.querySelector('input#description'),
-  amount: document.querySelector('input#amount').value,
+  amount: document.querySelector('input#amount'),
   date: document.querySelector('input#date'),
 
   // Pegar os valores e organizar
   getValues(){
     return {
       description: this.description.value,
-      amount: Form.amount.value,
+      amount: this.amount.value,
       date: this.date.value
     };
   },
@@ -76,7 +76,7 @@ const Form = {
     date = Utils.formatDate(date);
     return {
       description: description,
-      amount,
+      value: amount,
       date
     };
   },
@@ -102,13 +102,13 @@ const Form = {
 
     // Formatando os campos
     const transaction = Form.formatData();
-    // console.log(transaction);
+    console.log(transaction);
 
     // Salvando a transação
     Form.saveTransaction(transaction);
 
     // Limpando os campos
-    // Form.clearFields();
+    Form.clearFields();
 
     // Fechando o modal
     Modal.close();
@@ -153,13 +153,7 @@ const Transactions = {
   },
   total(){
     // entradas + saídas
-    let total = 0;
-
-    Transactions.all.forEach((transaction) => {
-      total += transaction.value; 
-    });
-    
-    return total;
+    return Transactions.incomes() + Transactions.expanses();
   }
 }
 
@@ -180,7 +174,8 @@ const DOM = {
   innerHtmlTransaction(transaction) {
     const cssClass = transaction.value > 0 ? "income" : "expanse";
 
-    const value = Utils.formatCurrency(transaction.value);
+    let value = Utils.formatCurrency(transaction.value);
+    console.log(value);
 
     const html = `
         <td class="description">${transaction.description}</td>
@@ -218,17 +213,16 @@ const DOM = {
 const Utils = {
   // Formatar o número para a moeda br
   formatCurrency(value){
-    const signal = Number(value) < 0 ? '-' : '';
+    const signal = Number(value) < 0 ? "-" : ""
 
-    // para trocar tudo que não é número, temos que usar o D dentro da "casinha"
-    value = String(value).replace(/\D/, "");
+    value = String(value).replace(/\D/g, "")
 
-    value = Number(value);
+    value = Number(value) / 100
 
-    value = value.toLocaleString("pt-BR",{
-      style: 'currency',
-      currency: "BRL"
-    });
+    value = value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    })
 
     return signal + " " + value;
   },
@@ -244,9 +238,9 @@ const Utils = {
 },
   // Formatar o valor "amount" do modal
   formatAmount(value){
-    value = Number(value);
-    console.log(amount);
-    return value;
+    value = Number(value) * 100
+    console.log(value);
+    return value
   },
   // Formatar o valor "date" do modal
   formatDate (date){
@@ -272,9 +266,3 @@ const App = {
 };
 
 App.init();
-
-Transactions.add({
-  description: 'Skin Valorant :D',
-  value: -15021.23,
-  date: '24/01/2022'
-});
