@@ -19,104 +19,18 @@ body.onkeyup = (e) => {
   }
 };
 
-// Objeto que tem as infos da table
-const transactions = [{
-  description: 'Luz',
-  value: -50000,
-  date: '23/01/2022'
-}, 
-{
-  description: 'Internet',
-  value: -20000,
-  date: '17/01/2022'
-}, 
-{
-  description: 'Website',
-  value: 500000,
-  date: '12/01/2022'
-},
-{
-  description: 'App',
-  value: 700000,
-  date: '12/01/2022'
-}
-];
-
-const Form = {
-  description: document.querySelector('input#description'),
-  amount: document.querySelector('input#amount'),
-  date: document.querySelector('input#date'),
-
-  // Pegar os valores e organizar
-  getValues(){
-    return {
-      description: this.description.value,
-      amount: this.amount.value,
-      date: this.date.value
-    };
+const Storage = {
+  get (){
+    return JSON.parse(localStorage.getItem("dev.finances:transactions")) || [];
   },
-
-  // Verificar se todos os campos foram preenchidos
-  validadeFields(){
-    if(
-      this.getValues().description === '' ||
-      this.getValues().amount === '' ||
-      this.getValues().date === ''
-    ){
-      alert(
-        "Opa! Algo deu errado... Por favor, preencha os campos corretamente."
-      );
-    };
-  },
-
-  // Formatar os dados para salvar
-  formatData(){
-    let { description, amount, date } = this.getValues(); 
-    amount = Utils.formatAmount(amount);
-    date = Utils.formatDate(date);
-    return {
-      description: description,
-      value: amount,
-      date
-    };
-  },
-
-  // Salvando a transação
-  saveTransaction(transaction){
-    Transactions.add(transaction);
-  },
-
-  // Limpar os dados dos campos
-  clearFields(){
-    this.description.value = "";
-    this.amount.value = "";
-    this.date.value = "";
-  },
-
-  // Enviar dados
-  submit(event) {
-    event.preventDefault();
-
-    // Validando os campos
-    Form.validadeFields();
-
-    // Formatando os campos
-    const transaction = Form.formatData();
-
-    // Salvando a transação
-    Form.saveTransaction(transaction);
-
-    // Limpando os campos
-    Form.clearFields();
-
-    // Fechando o modal
-    Modal.close();
+  set(transactions){
+    localStorage.setItem("dev.finances:transactions", JSON.stringify(transactions));
   }
-}
+};
 
 // Calcular as entradas e saídas e somar num total
 const Transactions = {
-  all: transactions,
+  all: Storage.get(),
   add(transaction){
     Transactions.all.push(transaction);
 
@@ -240,6 +154,8 @@ const Utils = {
   
   if(totalTransactions < 0){
     totalDisplay.classList.add("negative");
+  }else{
+    totalDisplay.classList.remove("negative");
   }
   
 },
@@ -256,6 +172,80 @@ const Utils = {
   }
 };
 
+// Parte responsável pelo formulário dentro do modal
+const Form = {
+  description: document.querySelector('input#description'),
+  amount: document.querySelector('input#amount'),
+  date: document.querySelector('input#date'),
+
+  // Pegar os valores e organizar
+  getValues(){
+    return {
+      description: this.description.value,
+      amount: this.amount.value,
+      date: this.date.value
+    };
+  },
+
+  // Verificar se todos os campos foram preenchidos
+  validadeFields(){
+    if(
+      this.getValues().description === '' ||
+      this.getValues().amount === '' ||
+      this.getValues().date === ''
+    ){
+      alert(
+        "Opa! Algo deu errado... Por favor, preencha os campos corretamente."
+      );
+    };
+  },
+
+  // Formatar os dados para salvar
+  formatData(){
+    let { description, amount, date } = this.getValues(); 
+    amount = Utils.formatAmount(amount);
+    date = Utils.formatDate(date);
+    return {
+      description: description,
+      value: amount,
+      date
+    };
+  },
+
+  // Salvando a transação
+  saveTransaction(transaction){
+    Transactions.add(transaction);
+  },
+
+  // Limpar os dados dos campos
+  clearFields(){
+    this.description.value = "";
+    this.amount.value = "";
+    this.date.value = "";
+  },
+
+  // Enviar dados
+  submit(event) {
+    event.preventDefault();
+
+    // Validando os campos
+    Form.validadeFields();
+
+    // Formatando os campos
+    const transaction = Form.formatData();
+
+    // Salvando a transação
+    Form.saveTransaction(transaction);
+
+    // Limpando os campos
+    Form.clearFields();
+
+    // Fechando o modal
+    Modal.close();
+  }
+}
+
+// Responsável pelo funcionamento do esquema da aplicação
 const App = {
   init() {
     Transactions.all.forEach((transaction, index) => {
@@ -263,6 +253,8 @@ const App = {
     });
 
     DOM.updateBalance();
+
+    Storage.set(Transactions.all)
   },
   reload() {
     // Limpando o conteúdo antigo para não duplica-los na table
